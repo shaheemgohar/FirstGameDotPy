@@ -204,15 +204,16 @@ while run:
         if bullet.y - bullet.radius < goblin.hitbox[1] + goblin.hitbox[3] and bullet.y + bullet.radius > goblin.hitbox[1]:
             #now we check left and right side
             #we are on the right side of left side of rect
-            if bullet.x + bullet.radius > goblin.hitbox[0] and bullet.x - bullet.radius < goblin.hitbox[0] + goblin.hitbox[2]:
-                hitsound.play()
-                goblin.hit()
-                score += 1
+            if goblin.visible == True:
+                if bullet.x + bullet.radius > goblin.hitbox[0] and bullet.x - bullet.radius < goblin.hitbox[0] + goblin.hitbox[2]:
+                    hitsound.play()
+                    goblin.hit()
+                    score += 1
+                    bullets.pop(bullets.index(bullet))
+            if bullet.x < 500 and bullet.x > 0:
+                bullet.x += bullet.vel
+            else:
                 bullets.pop(bullets.index(bullet))
-        if bullet.x < 500 and bullet.x > 0:
-            bullet.x += bullet.vel
-        else:
-            bullets.pop(bullets.index(bullet))
 #we make a list of all the keys this is to constantly move the charac instead of just one key stroke at a time
     keys = pygame.key.get_pressed()
 
