@@ -8,19 +8,19 @@ pygame.display.set_caption("First game")
 clk = pygame.time.Clock()
 
 #to images
-walkRight = [pygame.image.load(f'R{n}.png') for n in range(1,10)]
-walkLeft = [pygame.image.load(f'L{n}.png') for n in range(1,10)]
-bg = pygame.image.load('bg.jpg')
-char = pygame.image.load('standing.png')
+walkRight = [pygame.image.load(f'./assets/R{n}.png') for n in range(1,10)]
+walkLeft = [pygame.image.load(f'./assets/L{n}.png') for n in range(1,10)]
+bg = pygame.image.load('./assets/bg.jpg')
+char = pygame.image.load('./assets/standing.png')
 
 
 score = 0
 
-bulletSound = pygame.mixer.Sound('bullet.mp3')
-hitsound = pygame.mixer.Sound('hit.mp3')
+bulletSound = pygame.mixer.Sound('./assets/bullet.mp3')
+hitsound = pygame.mixer.Sound('./assets/hit.mp3')
 bulletSound.play()
 
-music = pygame.mixer.music.load('music.mp3')
+music = pygame.mixer.music.load('./assets/music.mp3')
 pygame.mixer.music.play(-1)
 class player(object):
     def __init__(self,x,y , width, height):
@@ -104,8 +104,8 @@ class projectile(object):
         pygame.draw.circle(screen,self.color,(self.x,self.y),self.radius)
 
 class enemy(object):
-    walkRight = [pygame.image.load(f'R{n}E.png') for n in range(1,12)]
-    walkLeft = [pygame.image.load(f'L{n}E.png') for n in range(1,12)]
+    walkRight = [pygame.image.load(f'./assets/R{n}E.png') for n in range(1,12)]
+    walkLeft = [pygame.image.load(f'./assets/L{n}E.png') for n in range(1,12)]
 
     def __init__(self,x,y,width,height,end):
         self.x = x
