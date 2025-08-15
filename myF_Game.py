@@ -25,6 +25,10 @@ class player(object):
         self.right  = False
         self.walkCount = 0
         self.standing = True
+
+        #Customizing hit box
+        self.hitbox = (self.x + 17, self.y + 11, 29,52) #rectangle
+        ########
         # #x, y
         # x = 50 #char spawn  co-ord
         # y = 400
@@ -57,6 +61,8 @@ class player(object):
                 screen.blit(walkRight[0], (self.x, self.y))
             else:
                 screen.blit(walkLeft[0], (self.x, self.y))
+        self.hitbox = (self.x + 17, self.y+11, 29, 52)
+        pygame.draw.rect(screen, (255,0,0), self.hitbox,2) #
 
 class projectile(object):
     def __init__(self,x,y,radius, color, facing):
@@ -82,6 +88,7 @@ class enemy(object):
         self.path = [self.x, self.end] #starting, ending co ords
         self.walkCount = 0
         self.vel = 3
+        self.hitbox = (self.x + 17, self.y +2, 31, 57)
 
     def draw(self, win):
         self.move() #first we're gonna move then we're gonna draw the character 
@@ -93,7 +100,9 @@ class enemy(object):
         else:
             win.blit(self.walkLeft[self.walkCount // 3], (self.x, self.y))
             self.walkCount += 1
-        pass
+        self.hitbox = (self.x + 17, self.y +2, 31, 57)
+        pygame.draw.rect(win, (255,0,0), self.hitbox, 2)
+
     def move(self):
         #we move right if vel +ve
         if self.vel > 0:
@@ -110,7 +119,9 @@ class enemy(object):
             else:
                 self.vel = self.vel * -1
                 self.walkCount = 0
-        
+    def hit(self):
+        print('hit')
+        pass
 
 def redrawGameScreen():
         screen.blit(bg,(0,0))
@@ -123,6 +134,7 @@ def redrawGameScreen():
 #main loop
 man = player(300,410,64,64)
 goblin = enemy(100, 410, 64, 64, 450)
+shootLoop = 0
 bullets = []
 run = True
 
@@ -130,11 +142,22 @@ while run:
     #will get a list of all the events
     #and then we loop through those to check if they have happenend
     events = pygame.event.get()
-
+    if shootLoop > 0:
+        shootLoop += 1
+    if shootLoop > 4:
+        shootLoop = 0
     for e in events:
         if e.type == pygame.QUIT:
             run = False
     for bullet in bullets:
+        #checking if the bullet is in between the same y co-ord, 
+        #above the bottom of the rect of goblin, below the top of the rect
+        if bullet.y - bullet.radius < goblin.hitbox[1] + goblin.hitbox[3] and bullet.y + bullet.radius > goblin.hitbox[1]:
+            #now we check left and right side
+            #we are on the right side of left side of rect
+            if bullet.x + bullet.radius > goblin.hitbox[0] and bullet.x - bullet.radius < goblin.hitbox[0] + goblin.hitbox[2]:
+                goblin.hit()
+                bullets.pop(bullets.index(bullet))
         if bullet.x < 500 and bullet.x > 0:
             bullet.x += bullet.vel
         else:
@@ -142,13 +165,15 @@ while run:
 #we make a list of all the keys this is to constantly move the charac instead of just one key stroke at a time
     keys = pygame.key.get_pressed()
 
-    if keys[pygame.K_SPACE]:
+    if keys[pygame.K_SPACE] and shootLoop == 0:
         if man.left:
             facing = -1
         else:
             facing = 1
         if len(bullets) < 5:
             bullets.append(projectile(round(man.x + man.width // 2), round(man.y+ man.height//2), 6, (0,0,0),facing ))
+        shootLoop = 1
+    
     #we check turn by turn
     #if we do it zero then the char will go past the boudary 1xvel
     if keys[pygame.K_LEFT]and man.x >man.vel:
