@@ -69,15 +69,60 @@ class projectile(object):
     def draw(self,screen):
         pygame.draw.circle(screen,self.color,(self.x,self.y),self.radius)
 
+class enemy(object):
+    walkRight = [pygame.image.load(f'R{n}E.png') for n in range(1,12)]
+    walkLeft = [pygame.image.load(f'L{n}E.png') for n in range(1,12)]
+
+    def __init__(self,x,y,width,height,end):
+        self.x = x
+        self.y = y
+        self.width = width
+        self.height = height
+        self.end = end
+        self.path = [self.x, self.end] #starting, ending co ords
+        self.walkCount = 0
+        self.vel = 3
+
+    def draw(self, win):
+        self.move() #first we're gonna move then we're gonna draw the character 
+        if self.walkCount + 1 >= 33:
+            self.walkCount = 0
+        if self.vel > 0:
+            win.blit(self.walkRight[self.walkCount // 3], (self.x, self.y))
+            self.walkCount += 1
+        else:
+            win.blit(self.walkLeft[self.walkCount // 3], (self.x, self.y))
+            self.walkCount += 1
+        pass
+    def move(self):
+        #we move right if vel +ve
+        if self.vel > 0:
+            #if char about to move past the point we want it to stop at
+            if self.x + self.vel < self.path[1]:
+                self.x += self.vel
+            else:
+                #if we're about to be greater than the above then we need to change direc so we -1 * vel
+                self.vel = self.vel * -1
+                self.walkCount = 0
+        else:                               #starting path
+            if self.x - self.vel > self.path[0]:
+                self.x += self.vel
+            else:
+                self.vel = self.vel * -1
+                self.walkCount = 0
+        
+
 def redrawGameScreen():
         screen.blit(bg,(0,0))
         man.draw(screen)
+        goblin.draw(screen)
         for bullet in bullets:
             bullet.draw(screen)
         pygame.display.update()
 
 #main loop
 man = player(300,410,64,64)
+goblin = enemy(100, 410, 64, 64, 450)
 bullets = []
 run = True
 
